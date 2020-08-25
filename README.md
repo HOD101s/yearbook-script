@@ -4,9 +4,9 @@
 `python yearbookScrip.py [-h] -f FILE -d {CMPN,EXTC,IT} [-v [VERBOSE]]`
 
 #### Arguments
--h, --help            show this help message and exit
--f FILE, --file FILE  Data Source .csv file
--d {CMPN,EXTC,IT}, --dept {CMPN,EXTC,IT} Class Department 
+-h, --help            show this help message and exit <br>
+-f FILE, --file FILE  Data Source .csv file <br>
+-d {CMPN,EXTC,IT}, --dept {CMPN,EXTC,IT} Class Department  <br>
 -v [VERBOSE], --verbose [VERBOSE] Display Generated File StudentName
 
 ## Prerequisites
