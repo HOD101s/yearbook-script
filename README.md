@@ -1,7 +1,7 @@
 # yearbook-script
 
 ## yearbookScript.py usage
-`python yearbookScrip.py [-h] -f FILE -d {CMPN,EXTC,IT} [-v [VERBOSE]]`
+`python yearbookScript.py [-h] -f FILE -d {CMPN,EXTC,IT} [-v [VERBOSE]]`
 
 #### Arguments
 -h, --help            show this help message and exit <br>
