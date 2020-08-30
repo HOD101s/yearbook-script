@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import textwrap
 Image.MAX_IMAGE_PIXELS = None
 
@@ -94,48 +94,53 @@ def generateStudent(target,name,img,quote,roll,index,verbose):
     filename = str(roll)+' '+name+' '+str(index+1)
         
     student = Image.open('student.png')
-    
+    targetCopy = target.copy()
+
     if student.size[0]>student.size[1]:
         # save vertical image with 90 shifts
         getImg(target,name,student.rotate(270,expand=True),quote).save(folder+'/'+filename+' 270.png')
         getImg(target,name,student.rotate(90,expand=True),quote).save(folder+'/'+filename+' 90.png')
         
-    getImg(target,name,student,quote).save(folder+'/'+filename+'.png')
+    getImg(targetCopy,name,student,quote).save(folder+'/'+filename+'.png')
         
 
-def getImg(target,name,student,quote):
+def getImg(targetObj,name,student,quote):
+
+    target = targetObj.copy()
     
-    # Clear white workspace
     d = ImageDraw.Draw(target)
-    d.rectangle(((190,75 ), (900,1000)), fill="white")
+
+    # # Clear white workspace
+    # d.rectangle(((190,75 ), (900,1000)), fill="white")
     
     # Paste student image in target
-    student.thumbnail( (700,700), Image.ANTIALIAS)
-    target.paste(student,((1080-student.size[0])//2,130))
+    student.thumbnail( (500,500), Image.ANTIALIAS)
+    student = ImageOps.expand(student, border=3)
+    target.paste(student,((target.size[0]-student.size[0])//2, ((target.size[1]-student.size[1])//2-60 )))
     
-    # Name Rectangle
-    d.rectangle(((190,800 ), (890,900)), fill="#fff2e6")
+    # # Name Rectangle
+    # d.rectangle(((190,800 ), (890,900)), fill="#fff2e6")
     
     # Add Name
-    namefont = ImageFont.truetype("Abys-Regular.otf", 45)
+    namefont = ImageFont.truetype("fonts/gabr.ttf", 40)
     w,h = d.textsize(name,namefont)
-    d.text(((1080-w)/2,820), name, fill=(0,0,0),font=namefont)
+    d.text(((target.size[0]-w)/2,750), name, fill=(0,0,0),font=namefont)
     
     # Add Quote
-    quotefont = ImageFont.truetype("Symbola.ttf", 30)
-    currentHt,pad = 930,30
-    para = textwrap.wrap(quote, width=60)
+    quotefont = ImageFont.truetype("fonts/Quicksand.ttf", 30)
+    currentHt,pad = 800,30
+    para = textwrap.wrap(quote, width=48)
     for line in para:
         w,h = d.textsize(line,quotefont)
-        d.text(((1080-w)/2,currentHt), line, fill=(0,0,0),font=quotefont)
+        d.text(((target.size[0]-w)/2,currentHt), line, fill=(0,0,0),font=quotefont)
         currentHt += pad
     
     return target
 
 template = {}
-template['CMPN'] = "targetPink.jfif"
-template['EXTC'] = "targetBlue.jfif"
-template['IT'] = "targetGreen.jfif"
+template['CMPN'] = "targets/targetPink.png"
+template['EXTC'] = "targets/targetBlue.png"
+template['IT'] = "targets/targetGreen.png"
 
 for i in tqdm(range(data.shape[0])):
     target = Image.open(template[args.dept])
