@@ -8,6 +8,10 @@
 -f FILE, --file FILE  Data Source .csv file <br>
 -d {CMPN,EXTC,IT}, --dept {CMPN,EXTC,IT} Class Department  <br>
 -v [VERBOSE], --verbose [VERBOSE] Display Generated File StudentName
+-s [SKIP], --skip [SKIP] Number of Indexes to Skip
+
+## logs.txt
+Error Logs file
 
 ## Prerequisites
 Generate Google Drive API Credentials : https://developers.google.com/drive/api/v3/quickstart/python

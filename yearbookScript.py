@@ -34,6 +34,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-f", "--file", help = "Data Source .csv file",required=True)
 parser.add_argument("-d", "--dept", help = "Class Department",choices=['CMPN','EXTC','IT'],required=True) 
 parser.add_argument("-v", "--verbose", type=str2bool, nargs='?', default=False, help = "Display Generated File StudentName")
+parser.add_argument("-s", "--skip", default=0, help = "Number of Indexes to Skip")
 args = parser.parse_args()
 
 sourcefile = args.file
@@ -74,13 +75,15 @@ def getId(url):
         res.append(urlparse(link).query[3:])
     return res
 
-data['ImageId'] = data['Picture '].apply(lambda x : getId(x))
+# DATA is not consistent therefore must change Column names per csv or edit csvs
+data['ImageId'] = data['Picture'].apply(lambda x : getId(x))
 
 
 def generateStudent(target,name,img,quote,roll,index,verbose):
     
     # get image    
     # google api to download file into student.png
+    
     request = drive.files().get_media(fileId=img)
     fh = io.FileIO("student.png", 'wb')
     downloader = MediaIoBaseDownload(fh, request)
@@ -88,12 +91,19 @@ def generateStudent(target,name,img,quote,roll,index,verbose):
     while done is False:
         status, done = downloader.next_chunk()
         if verbose:
-            print(name)    
+            print(name)  
         
     # File Naming Convention : RollNumber StudentName PhotoNumber Rotation
     filename = str(roll)+' '+name+' '+str(index+1)
         
-    student = Image.open('student.png')
+    try:
+        student = Image.open('student.png')
+    except:
+        print(f'Failed on Entry : {index} Roll : {roll} Name : {name}')
+        with open(folder+'/'+'logs.txt','w') as f:
+            f.write(f'Failed on Image : {index+1} Roll : {roll} Name : {name}\n')
+        return
+
     targetCopy = target.copy()
 
     if student.size[0]>student.size[1]:
@@ -104,35 +114,29 @@ def generateStudent(target,name,img,quote,roll,index,verbose):
     getImg(targetCopy,name,student,quote).save(folder+'/'+filename+'.png')
         
 
-def getImg(targetObj,name,student,quote):
+def getImg(targetObj,name,student,quote,CORRECTION=7):
 
     target = targetObj.copy()
     
     d = ImageDraw.Draw(target)
-
-    # # Clear white workspace
-    # d.rectangle(((190,75 ), (900,1000)), fill="white")
     
     # Paste student image in target
     student.thumbnail( (500,500), Image.ANTIALIAS)
     student = ImageOps.expand(student, border=3)
-    target.paste(student,((target.size[0]-student.size[0])//2, ((target.size[1]-student.size[1])//2-60 )))
-    
-    # # Name Rectangle
-    # d.rectangle(((190,800 ), (890,900)), fill="#fff2e6")
+    target.paste(student,((target.size[0]-student.size[0])//2 + CORRECTION, ((target.size[1]-student.size[1])//2-60 )))
     
     # Add Name
     namefont = ImageFont.truetype("fonts/gabr.ttf", 40)
     w,h = d.textsize(name,namefont)
-    d.text(((target.size[0]-w)/2,750), name, fill=(0,0,0),font=namefont)
+    d.text(((target.size[0]-w)/2+ CORRECTION,750), name, fill=(0,0,0),font=namefont)
     
     # Add Quote
-    quotefont = ImageFont.truetype("fonts/Quicksand.ttf", 30)
-    currentHt,pad = 800,30
-    para = textwrap.wrap(quote, width=48)
+    quotefont = ImageFont.truetype("fonts/Symbola.ttf", 30)
+    currentHt,pad = 810,30
+    para = textwrap.wrap(quote, width=45)
     for line in para:
         w,h = d.textsize(line,quotefont)
-        d.text(((target.size[0]-w)/2,currentHt), line, fill=(0,0,0),font=quotefont)
+        d.text(((target.size[0]-w)/2+ CORRECTION,currentHt), line, fill=(0,0,0),font=quotefont)
         currentHt += pad
     
     return target
@@ -142,9 +146,12 @@ template['CMPN'] = "targets/targetPink.png"
 template['EXTC'] = "targets/targetBlue.png"
 template['IT'] = "targets/targetGreen.png"
 
-for i in tqdm(range(data.shape[0])):
+skip = args.skip
+for i in tqdm(range(skip,data.shape[0])):
     target = Image.open(template[args.dept])
-    name = data.iloc[i]['Full Name.']
+    name = data.iloc[i]['Full Name.'].strip()
+    if len(name.split(' ')) >2:
+        name = ' '.join([name.split(' ')[0],name.split(' ')[-1]])
     img = data.iloc[i]['ImageId']
     quote = data.iloc[i]['Quote']
     roll = data.iloc[i]['Roll No.']
