@@ -1,4 +1,4 @@
-# yearbook-script
+# Yearbook Image Generation Script
 
 ## yearbookScript.py usage
 `python yearbookScript.py [-h] -f FILE -d {CMPN,EXTC,IT} [-v [VERBOSE]]`
@@ -7,11 +7,12 @@
 -h, --help            show this help message and exit <br>
 -f FILE, --file FILE  Data Source .csv file <br>
 -d {CMPN,EXTC,IT}, --dept {CMPN,EXTC,IT} Class Department  <br>
--v [VERBOSE], --verbose [VERBOSE] Display Generated File StudentName
+-v [VERBOSE], --verbose [VERBOSE] Display Generated File StudentName <br>
 -s [SKIP], --skip [SKIP] Number of Indexes to Skip
 
-## logs.txt
-Error Logs file
+## Error Logging
+#### logs.txt
+Error Logs file generated to track failed data points and store error log.
 
 ## Prerequisites
 Generate Google Drive API Credentials : https://developers.google.com/drive/api/v3/quickstart/python

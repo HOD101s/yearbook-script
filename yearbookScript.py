@@ -97,10 +97,11 @@ def generateStudent(target,name,img,quote,roll,index,verbose):
         filename = str(roll)+' '+name+' '+str(index+1)
 
         student = Image.open('student.png')
-    except:
-        print(f'Failed on Entry : {index} Roll : {roll} Name : {name}')
-        with open(folder+'/'+'logs.txt','w') as f:
-            f.write(f'Failed on Image : {index+1} Roll : {roll} Name : {name}\n')
+    except Exception as e:
+        print(f'Failed on Image : {index+1} Roll : {roll} Name : {name}')
+        print(e)
+        with open(folder+'/'+'logs.txt','a') as f:
+            f.write(f'Failed on Image : {index+1} Roll : {roll} Name : {name}\n{e}\n\n')
         return
 
     targetCopy = target.copy()
