@@ -72,7 +72,11 @@ def getId(url):
     urls = url.split(',')
     res = []
     for link in urls:
-        res.append(urlparse(link).query[3:])
+        idd = urlparse(link).query[3:]
+        if idd == '' or idd == '=sharing':
+            res.append(link[32:].split('/')[0])
+        else:
+            res.append(idd)
     return res
 
 # DATA is not consistent therefore must change Column names per csv or edit csvs
