@@ -83,20 +83,19 @@ def generateStudent(target,name,img,quote,roll,index,verbose):
     
     # get image    
     # google api to download file into student.png
-    
-    request = drive.files().get_media(fileId=img)
-    fh = io.FileIO("student.png", 'wb')
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-        if verbose:
-            print(name)  
-        
-    # File Naming Convention : RollNumber StudentName PhotoNumber Rotation
-    filename = str(roll)+' '+name+' '+str(index+1)
-        
     try:
+        request = drive.files().get_media(fileId=img)
+        fh = io.FileIO("student.png", 'wb')
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+            if verbose:
+                print(name)  
+            
+        # File Naming Convention : RollNumber StudentName PhotoNumber Rotation
+        filename = str(roll)+' '+name+' '+str(index+1)
+
         student = Image.open('student.png')
     except:
         print(f'Failed on Entry : {index} Roll : {roll} Name : {name}')
@@ -146,8 +145,9 @@ template['CMPN'] = "targets/targetPink.png"
 template['EXTC'] = "targets/targetBlue.png"
 template['IT'] = "targets/targetGreen.png"
 
-skip = args.skip
+skip = int(args.skip)
 for i in tqdm(range(skip,data.shape[0])):
+    
     target = Image.open(template[args.dept])
     name = data.iloc[i]['Full Name.'].strip()
     if len(name.split(' ')) >2:
@@ -155,6 +155,7 @@ for i in tqdm(range(skip,data.shape[0])):
     img = data.iloc[i]['ImageId']
     quote = data.iloc[i]['Quote']
     roll = data.iloc[i]['Roll No.']
+
     try:
         os.mkdir(folder)
     except:
