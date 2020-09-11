@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import requests
 import shutil
-
+import re
 import sys
 import os.path
 import io
@@ -65,6 +65,7 @@ if not creds or not creds.valid:
 drive = build('drive', 'v3', credentials=creds)
 
 # Reading File
+# Expected Column Names : Timestamp,Full Name.,Roll No.,Picture,Quote,Groupfie 
 data = pd.read_csv(sourcefile)
 
 # Extract image Ids
@@ -72,11 +73,15 @@ def getId(url):
     urls = url.split(',')
     res = []
     for link in urls:
-        idd = urlparse(link).query[3:]
-        if idd == '' or idd == '=sharing':
-            res.append(link[32:].split('/')[0])
-        else:
-            res.append(idd)
+        if re.search(r'[-\w]{33,}',link):
+            res.append(re.search(r'[-\w]{33,}',link).group(0))
+
+        # idd = urlparse(link).query[3:]
+        # if idd == '' or idd == '=sharing':
+        #     res.append(link[32:].split('/')[0])
+        # else:
+        #     res.append(idd)
+
     return res
 
 # DATA is not consistent therefore must change Column names per csv or edit csvs

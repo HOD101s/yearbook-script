@@ -10,6 +10,9 @@
 -v [VERBOSE], --verbose [VERBOSE] Display Generated File StudentName <br>
 -s [SKIP], --skip [SKIP] Number of Indexes to Skip
 
+##### Expected Column Names in csv file : Timestamp,Full Name.,Roll No.,Picture,Quote,Groupfie
+Yes I'm aware of the typo. However we do not handle Groupfile images in this script so even if absent no isses.
+
 ## Error Logging
 #### logs.txt
 Error Logs file generated to track failed data points and store error log.
